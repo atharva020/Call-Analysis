@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Call Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Upload Call Recording for Analysis</h1>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="audio_file" accept=".wav,.mp3,.flac" required>
+            <button type="submit">Upload and Analyze</button>
+        </form>
+        
+        <div id="results">
+            <h2>Analysis Results</h2>
+            <p><strong>Transcription:</strong> <span id="transcription"></span></p>
+            <p><strong>Emotion:</strong> <span id="emotion"></span></p>
+            <p><strong>Sentiment:</strong> <span id="sentiment"></span></p>
+            <p><strong>Speaker Diarization:</strong> <span id="diarization"></span></p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.querySelector("form");
+        form.onsubmit = async function(e) {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            
+            document.getElementById("transcription").innerText = data.transcription;
+            document.getElementById("emotion").innerText = data.emotion;
+            document.getElementById("sentiment").innerText = data.sentiment;
+            document.getElementById("diarization").innerText = JSON.stringify(data.diarization, null, 2);
+        }
+    </script>
+</body>
+</html>
